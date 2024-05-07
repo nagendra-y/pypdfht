@@ -1,18 +1,37 @@
 # pypdfht
 
 ## Overview
-`pypdfht` is a Python library designed to highlight text within PDF files. It provides a simple API for identifying and highlighting specific strings of text on any given page of a PDF.
+`pypdfht` is a simple python app to highlight text within PDF files. It provides a simple API for identifying and highlighting specific strings of text on any given page of a PDF.
 
 ## Features
 - **Text Highlighting**: Utilize the `highlight_entire_text_on_page` function to programmatically highlight text on a PDF page.
 
 ## API Example
-To use the API to highlight text, you can send a POST request with the PDF file, the page number, and the text to be highlighted. Below is an example using `curl`:
+```python
+    data = {
+        'page_number': 3,
+        'text': 'void function(int a, int b, int c) { char buffer1[5]; char buffer2[10]; }'
+    }
+    
+    # Files to be uploaded (if any)
+    files = {
+        'file': open('example.pdf', 'rb')  # Replace 'example.pdf' with the actual file path
+    }    
+    # Make a POST request to the Flask route
+    response = requests.post('http://localhost:5000/highlight', data=data, files=files)
+    # Decode the JSON response
+    response_data = response.json()
+    
+    if 'error' in response_data:
+        print(response_data)
+        return
 
-```bash
-curl -X POST -F "file=@path_to_your_file.pdf" -F "page_number=1" -F "text='your text here'" http://your-server-address/highlight
+    with open('highlighted_image.png', 'wb') as f:
+        # Decode the base64 string to bytes directly
+        decoded_image_data = base64.b64decode(response_data['image_data_base64'])
+        f.write(decoded_image_data)
 ```
-
+![highlightedimage](highlighted_image.png)
 ## Usage
 To use the highlighting feature, ensure you have a running instance of the server that includes the `highlight` route as defined in `app.py`. Then, use the curl command above to send a request to the server.
 
